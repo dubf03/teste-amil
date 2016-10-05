@@ -1,52 +1,77 @@
 $(document).ready(function(){
 
+	$("#save").on("click", function(){
+		event.preventDefault()
 
-	 var converteGB = function (value){
-			 return (value / (1024*1024)).toFixed(2);
-	 };
+		name = $("#name").val();
+		email = $("#email").val();
+		phone = $("#phone").val();
 
-	 var percents = function (total, used){
-		value = (100 * used) / total;
-		value = value.toFixed(0);
-
-		return value;
-	 };
-
-	 var setColor = function(value) {
-
-		if(value <= 50) {
-			color = 'green';
-		}else if (value >= 51 && value <= 100) {
-			color = 'yellow';
-		}else if(value >= 102){
-			color = 'red';
+		if(validateName(name) && validateEmail(email) && validatePhone(phone)) {
+			showContacts(name, email, phone);
 		}
+		
+	});
 
-		return color;
-	 };
+	$("input").on("blur", function(){
+		field = $(this).attr('name');
+		val = $(this).val();
+		switch (field) {
+			case "name": 
+				validateName(val); break;
+			case "phone":
+				validatePhone(val); break;
+			case "email":
+				validateEmail(val); break;
+		}
+	});
 
+	$("#cancel").on("click", function(){
+		event.preventDefault()
+		clearAll();
+	});
 
-	 $.ajax({
-		 url: "../plano.json",
-		 context: document.body
-	 }).done(function(res) {
-			$('#calls .data p:first-child var').text(res.ligacoes.utilizados);
-			$('#calls .data p:last-child var').text(res.ligacoes.contratados);
-			value1 = percents(res.ligacoes.contratados, res.ligacoes.utilizados);
-			$('#calls .bar').css('width', value1+"%");
-			$('#calls .bar').addClass(setColor(value1));
+	var validateName = function(text) {
+		regex = new RegExp("^[a-zA-Z\\s]+$");
+		if (!regex.test(text) || text == "") {
+			$("#messages").text("Preencha o campo nome corretamente.");
+			return false;
+		}else {
+			return true;
+		}
+	};
 
-			$('#messages .data p:first-child var').text(res.torpedos.utilizados);
-			$('#messages p:last-child var').text(res.torpedos.contratados);
-			value2 = percents(res.torpedos.contratados, res.torpedos.utilizados);
-			$('#messages .bar').css('width', value2+"%");
-			$('#messages .bar').addClass(setColor(value2));
+	var validateEmail = function(email) {
+		regex = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+		if (!regex.test(email) || email == "") {
+			$("#messages").text("Preencha o campo email corretamente.");
+			return false;
+		}else {
+			return true;
+		}
+	};
 
-			$('#internet .data p:first-child var').text( converteGB(res.dados.utilizados));
-			$('#internet .data p:last-child var').text( converteGB(res.dados.contratados));
-			value3 = percents(res.dados.contratados, res.dados.utilizados);
-			$('#internet .bar').css('width', value3+"%");
-			$('#internet .bar').addClass(setColor(value3));
-	 });
+	var validatePhone = function(phone) {
+		regex = new RegExp(/^(\(11\) (9\d{4})-\d{4})|((\(1[2-9]{1}\)|\([2-9]{1}\d{1}\)) [5-9]\d{3}-\d{4})$/);
+		if (!regex.test(phone) || phone == "") {
+			$("#messages").text("Preencha o campo telefone corretamente.");
+			return false;
+		}else {
+			return true;
+		}
+	};
+
+	var showContacts = function(nome, email, phone){
+		$("#contacts").append(nome+" - "+email+" - "+phone+"<br>");
+		clearAll();
+	}
+
+	var clearAll = function(){
+		$("#name").val("");
+		$("#email").val("");
+		$("#phone").val("");
+	}
+
+	$('#phone').mask('(00) 00000-0000');
 
 });

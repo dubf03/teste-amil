@@ -47,7 +47,7 @@ gulp.task('images', function(tmp) {
 //compiling our Javascripts
 gulp.task('scripts', function() {
     //this is where our dev JS scripts are
-    return gulp.src(['www/assets/js/main.js'])
+    return gulp.src(["www/assets/js/main.js", "www/assets/js/jquery.mask.js"])
                 //prevent pipe breaking caused by errors from gulp plugins
                 .pipe(plumber())
                 //this is the filename of the compressed version of our JS
